@@ -102,6 +102,10 @@ main {
   font-weight: 750;
 }
 
+.reset-button {
+  flex: 0 0 auto;
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

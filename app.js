@@ -685,6 +685,11 @@
       renderResults();
     });
 
+    document.querySelector("#resetButton").addEventListener("click", () => {
+      state = clone(defaultState);
+      saveState();
+      renderAll();
+    });
   }
 
   function renderAll() {
