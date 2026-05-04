@@ -51,8 +51,18 @@
       {
         key: "adultCompetition",
         label: "Adultes compétition",
-        count: 39,
+        count: 31,
         fee: 150,
+        federal: 31.57,
+        territorial: 29.75,
+        tournamentsIncluded: 0,
+        tournamentFee: 0,
+      },
+      {
+        key: "adultCompetitionTraining",
+        label: "Adultes compétition + entraînement",
+        count: 8,
+        fee: 180,
         federal: 31.57,
         territorial: 29.75,
         tournamentsIncluded: 0,
@@ -75,7 +85,6 @@
       costPerBox: 35,
       subsidizedSalePrice: 20,
       regularSalePrice: 35,
-      youthBoxesPerPlayer: 1.2,
       freePlaySeasonStart: "2025-09-01",
       freePlaySeasonEnd: "2026-06-30",
       freePlayBoxesPerWeek: 4,
@@ -156,7 +165,7 @@
     ],
   };
 
-  const storageKey = "bcv38-financial-simulator-v2";
+  const storageKey = "bcv38-financial-simulator-v3";
   const schoolHolidayPeriods = [
     { label: "Toussaint", start: "2025-10-18", end: "2025-11-03" },
     { label: "Noël", start: "2025-12-20", end: "2026-01-05" },
@@ -194,7 +203,6 @@
       ["costPerBox", "Prix achat boîte", "€", "number", "expense"],
       ["subsidizedSalePrice", "Prix vente subventionné", "€", "number", "revenue"],
       ["regularSalePrice", "Prix vente après quota", "€", "number", "revenue"],
-      ["youthBoxesPerPlayer", "Boîtes offertes / jeune", "boîtes", "number", "expense"],
       ["freePlaySeasonStart", "Début saison jeux libre", "zone A Grenoble", "date", "neutral"],
       ["freePlaySeasonEnd", "Fin saison jeux libre", "hors été", "date", "neutral"],
       ["freePlayBoxesPerWeek", "Boîtes / semaine jeux libre", "boîtes", "number", "expense"],
@@ -279,6 +287,10 @@
   function signed(value) {
     const sign = value > 0 ? "+" : "";
     return `${sign}${money(value)}`;
+  }
+
+  function hasAdultCompetitionBenefits(member) {
+    return member.key === "adultCompetition" || member.key === "adultCompetitionTraining";
   }
 
   function referenceNote(section, field, index = "") {
@@ -447,10 +459,10 @@
       .filter((member) => member.key === "minibad" || member.key.startsWith("young"))
       .reduce((sum, member) => sum + member.count, 0);
     const adultCompetitorMembers = state.members
-      .filter((member) => member.key === "adultCompetition")
+      .filter(hasAdultCompetitionBenefits)
       .reduce((sum, member) => sum + member.count, 0);
     const freePlayBeneficiaries = state.members
-      .filter((member) => member.key === "adultCompetition" || member.key === "external")
+      .filter((member) => hasAdultCompetitionBenefits(member) || member.key === "external")
       .reduce((sum, member) => sum + member.count, 0);
 
     const membershipRevenue = state.members.reduce((sum, member) => sum + member.count * member.fee, 0);
@@ -461,8 +473,7 @@
     const adultBoxes = adultCompetitorMembers * state.shuttle.adultBoxesPerPlayer;
     const subsidizedBoxes = Math.min(adultBoxes, adultCompetitorMembers * state.shuttle.subsidizedBoxesPerAdult);
     const regularBoxes = Math.max(0, adultBoxes - subsidizedBoxes);
-    const youthBoxes = youthMembers * state.shuttle.youthBoxesPerPlayer;
-    const totalBoxes = adultBoxes + youthBoxes;
+    const totalBoxes = adultBoxes;
     const shuttleRevenue =
       subsidizedBoxes * state.shuttle.subsidizedSalePrice + regularBoxes * state.shuttle.regularSalePrice;
     const memberShuttleExpense = totalBoxes * state.shuttle.costPerBox;
@@ -489,14 +500,14 @@
     const youthTrainingCostPerYouth = youthTrainingExpense / Math.max(1, youthMembers);
     const categoryCosts = state.members.map((member) => {
       const licensePerPlayer = member.federal + member.territorial;
-      const isAdultCompetitor = member.key === "adultCompetition";
+      const isAdultCompetitor = hasAdultCompetitionBenefits(member);
       const isYouth = member.key === "minibad" || member.key.startsWith("young");
       const shuttlePerPlayer = isAdultCompetitor
         ? competitorShuttleCostPerPlayer
         : isYouth
           ? youthTrainingCostPerYouth
           : 0;
-      const hasFreePlayShuttles = member.key === "adultCompetition" || member.key === "external";
+      const hasFreePlayShuttles = isAdultCompetitor || member.key === "external";
       const freePlayPerPlayer = hasFreePlayShuttles ? freePlayCostPerBeneficiary : 0;
       const stringingPerPlayer = isAdultCompetitor ? stringingCostPerCompetitor : 0;
       const costPerPlayer = licensePerPlayer + shuttlePerPlayer + freePlayPerPlayer + stringingPerPlayer;
