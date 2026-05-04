@@ -156,7 +156,7 @@
     ],
   };
 
-  const storageKey = "bcv38-financial-simulator-v1";
+  const storageKey = "bcv38-financial-simulator-v2";
   const schoolHolidayPeriods = [
     { label: "Toussaint", start: "2025-10-18", end: "2025-11-03" },
     { label: "Noël", start: "2025-12-20", end: "2026-01-05" },
