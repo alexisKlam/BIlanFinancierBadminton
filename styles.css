@@ -154,7 +154,7 @@ main {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(560px, 2fr) minmax(300px, 1fr);
+  grid-template-columns: minmax(620px, 2fr) minmax(320px, 1fr);
   gap: 18px;
   align-items: start;
 }
@@ -349,13 +349,15 @@ summary {
 
 .insight-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 12px;
 }
 
 .insight-grid article {
-  border-top: 1px solid var(--line);
-  padding: 14px 0 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fff;
 }
 
 .insight-grid strong {
@@ -375,6 +377,7 @@ summary {
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
+  flex-wrap: wrap;
   margin: 0;
   border-left: 3px solid var(--line);
   padding-left: 8px;
@@ -386,6 +389,7 @@ summary {
 }
 
 .mini-row strong {
+  flex: 0 0 auto;
   margin: 0;
   font-size: 1rem;
   font-variant-numeric: tabular-nums;
@@ -466,8 +470,7 @@ summary {
 }
 
 @media (max-width: 1120px) {
-  .summary-grid,
-  .insight-grid {
+  .summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
