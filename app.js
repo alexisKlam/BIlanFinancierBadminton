@@ -3,7 +3,7 @@
     revenue: 38288.3,
     expense: 39822.4,
     result: -1534.1,
-    previousCash: 34638.42,
+    previousCash: 15000,
   };
 
   const defaultState = {
@@ -96,7 +96,7 @@
       clubLife: 2171.5,
       bankFees: 201,
       miscExpense: 0,
-      cashStart: 34638.42,
+      cashStart: 15000,
     },
     events: [
       {
