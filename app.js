@@ -281,6 +281,61 @@
     return `${sign}${money(value)}`;
   }
 
+  function referenceNote(section, field, index = "") {
+    return `<small class="input-reference" data-section="${section}" data-index="${index}" data-field="${field}"></small>`;
+  }
+
+  function getReferenceValue(section, field, index) {
+    if (section === "members") {
+      return defaultState.members[Number(index)]?.[field] ?? null;
+    }
+    if (section === "events") {
+      return defaultState.events[Number(index)]?.[field] ?? null;
+    }
+    return defaultState[section]?.[field] ?? null;
+  }
+
+  function isMoneyField(field) {
+    return /fee|federal|territorial|cost|price|revenue|expense|grant|life|fees|cash|courses|stages|increase/i.test(
+      field
+    );
+  }
+
+  function formatReferenceValue(field, value) {
+    if (value === null || value === undefined || value === "") return "-";
+    if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+    const numeric = asNumber(value);
+    if (isMoneyField(field)) return money(numeric, Math.abs(numeric % 1) > 0);
+    return String(value);
+  }
+
+  function formatReferenceDelta(field, current, referenceValue) {
+    if (referenceValue === null || referenceValue === undefined || referenceValue === "") return "";
+    if (typeof referenceValue === "string" && /^\d{4}-\d{2}-\d{2}$/.test(referenceValue)) {
+      return current === referenceValue ? "" : "modifié";
+    }
+    const delta = asNumber(current) - asNumber(referenceValue);
+    if (Math.abs(delta) < 0.0001) return "";
+    const prefix = delta > 0 ? "+" : "";
+    return isMoneyField(field) ? `${prefix}${money(delta, Math.abs(delta % 1) > 0)}` : `${prefix}${delta}`;
+  }
+
+  function updateReferenceNotes() {
+    document.querySelectorAll(".input-reference").forEach((note) => {
+      const { section, field, index } = note.dataset;
+      const input = note.parentElement.querySelector(`[data-section="${section}"][data-field="${field}"]`);
+      const referenceValue = getReferenceValue(section, field, index);
+      if (!input || referenceValue === null) {
+        note.textContent = "";
+        note.classList.remove("is-changed");
+        return;
+      }
+      const delta = formatReferenceDelta(field, input.value, referenceValue);
+      note.textContent = `Réf. ${formatReferenceValue(field, referenceValue)}${delta ? ` · Écart ${delta}` : ""}`;
+      note.classList.toggle("is-changed", Boolean(delta));
+    });
+  }
+
   function renderMembers() {
     elements.membersTable.innerHTML = "";
     state.members.forEach((member, index) => {
@@ -297,7 +352,7 @@
   }
 
   function numberCell(field, value, index, step, flow) {
-    return `<td class="flow-cell flow-${flow}"><input type="number" min="0" step="${step}" value="${value}" data-section="members" data-index="${index}" data-field="${field}"></td>`;
+    return `<td class="flow-cell flow-${flow}"><input type="number" min="0" step="${step}" value="${value}" data-section="members" data-index="${index}" data-field="${field}">${referenceNote("members", field, index)}</td>`;
   }
 
   function renderControls(section, container) {
@@ -308,6 +363,7 @@
       wrapper.innerHTML = `
         <span>${label}</span>
         <input type="${type}" ${type === "number" ? 'step="0.01"' : ""} value="${state[section][field]}" data-section="${section}" data-field="${field}">
+        ${referenceNote(section, field)}
         <small>${suffix}</small>
       `;
       container.appendChild(wrapper);
@@ -323,10 +379,10 @@
       row.innerHTML = `
         <td><input value="${escapeAttribute(event.name)}" data-section="events" data-index="${index}" data-field="name"></td>
         <td><input value="${escapeAttribute(event.detail)}" data-section="events" data-index="${index}" data-field="detail"></td>
-        <td class="flow-cell flow-neutral"><input type="number" min="0" step="1" value="${event.playerCount}" data-section="events" data-index="${index}" data-field="playerCount"></td>
-        <td class="flow-cell flow-revenue"><input type="number" min="0" step="0.5" value="${event.priceIncrease}" data-section="events" data-index="${index}" data-field="priceIncrease"></td>
-        <td class="flow-cell flow-expense"><input type="number" min="0" step="0.01" value="${event.expense}" data-section="events" data-index="${index}" data-field="expense"></td>
-        <td class="flow-cell flow-revenue"><input type="number" min="0" step="0.01" value="${event.revenue}" data-section="events" data-index="${index}" data-field="revenue"></td>
+        <td class="flow-cell flow-neutral"><input type="number" min="0" step="1" value="${event.playerCount}" data-section="events" data-index="${index}" data-field="playerCount">${referenceNote("events", "playerCount", index)}</td>
+        <td class="flow-cell flow-revenue"><input type="number" min="0" step="0.5" value="${event.priceIncrease}" data-section="events" data-index="${index}" data-field="priceIncrease">${referenceNote("events", "priceIncrease", index)}</td>
+        <td class="flow-cell flow-expense"><input type="number" min="0" step="0.01" value="${event.expense}" data-section="events" data-index="${index}" data-field="expense">${referenceNote("events", "expense", index)}</td>
+        <td class="flow-cell flow-revenue"><input type="number" min="0" step="0.01" value="${event.revenue}" data-section="events" data-index="${index}" data-field="revenue">${referenceNote("events", "revenue", index)}</td>
         <td class="simulated-revenue">${money(projectedRevenue)}</td>
         <td><strong data-role="event-net" class="${net >= 0 ? "positive" : "negative"}">${money(net)}</strong></td>
         <td><button class="remove-button" type="button" data-remove-event="${index}" title="Supprimer" aria-label="Supprimer">×</button></td>
@@ -538,6 +594,7 @@
     document.querySelector("#stringingCount").textContent = `${totals.adultCompetitorMembers} compétiteurs × ${state.training.stringsPerAdultCompetitor} cordages`;
     document.querySelector("#organizedTournamentNet").textContent = money(totals.organizedTournamentNet);
     renderCategoryTable(totals.categoryCosts);
+    updateReferenceNotes();
   }
 
   function renderCategoryTable(categoryCosts) {

@@ -285,6 +285,19 @@ summary {
   min-width: 74px;
 }
 
+.input-reference {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.input-reference.is-changed {
+  color: var(--accent-3);
+}
+
 .control-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -302,6 +315,10 @@ summary {
 
 .control small {
   color: var(--muted);
+}
+
+.control .input-reference {
+  margin-top: -1px;
 }
 
 .flow-card.flow-revenue,
