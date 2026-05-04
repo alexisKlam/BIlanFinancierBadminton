@@ -102,8 +102,8 @@
     },
     other: {
       cityGrant: 2700,
-      clubLife: 2171.5,
-      bankFees: 500,
+      clubLife: 1800,
+      bankFees: 300,
       miscExpense: 0,
       cashStart: 15000,
     },
@@ -165,7 +165,7 @@
     ],
   };
 
-  const storageKey = "bcv38-financial-simulator-v4";
+  const storageKey = "bcv38-financial-simulator-v5";
   const schoolHolidayPeriods = [
     { label: "Toussaint", start: "2025-10-18", end: "2025-11-03" },
     { label: "Noël", start: "2025-12-20", end: "2026-01-05" },
