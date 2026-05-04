@@ -93,7 +93,7 @@
       youthTrainingBoxPrice: 35,
     },
     training: {
-      coachMonthlyCost: 1250,
+      coachMonthlyCost: 1760,
       months: 10,
       coachingAndStages: 1830,
       trainingCourses: 0,
@@ -165,7 +165,7 @@
     ],
   };
 
-  const storageKey = "bcv38-financial-simulator-v3";
+  const storageKey = "bcv38-financial-simulator-v4";
   const schoolHolidayPeriods = [
     { label: "Toussaint", start: "2025-10-18", end: "2025-11-03" },
     { label: "Noël", start: "2025-12-20", end: "2026-01-05" },
