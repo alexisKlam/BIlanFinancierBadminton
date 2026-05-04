@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simulateur financier BCV38</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Badminton Club Voreppe</p>
+        <h1>Simulateur de bilan financier</h1>
+      </div>
+    </header>
+
+    <main>
+      <section class="summary-grid" aria-label="Synthèse">
+        <article class="metric result-card">
+          <span>Résultat prévisionnel</span>
+          <strong id="metricResult">0 €</strong>
+          <small id="metricResultDelta">vs bilan 2024-2025</small>
+        </article>
+        <article class="metric">
+          <span>Recettes</span>
+          <strong id="metricRevenue">0 €</strong>
+          <small id="metricRevenueDelta">écart référence</small>
+        </article>
+        <article class="metric">
+          <span>Dépenses</span>
+          <strong id="metricExpense">0 €</strong>
+          <small id="metricExpenseDelta">écart référence</small>
+        </article>
+        <article class="metric">
+          <span>Solde bancaire projeté</span>
+          <strong id="metricCash">0 €</strong>
+          <small>après résultat simulé</small>
+        </article>
+      </section>
+
+      <section class="workspace">
+        <aside class="panel controls-panel">
+          <div class="panel-heading">
+            <h2>Paramètres</h2>
+            <p id="saveStatus">Sauvegarde locale active</p>
+            <div class="flow-legend" aria-label="Code couleur des paramètres">
+              <span class="legend-item legend-revenue">Recette</span>
+              <span class="legend-item legend-expense">Dépense</span>
+              <span class="legend-item legend-mixed">Mixte</span>
+              <span class="legend-item legend-neutral">Volume / date</span>
+            </div>
+          </div>
+
+          <details open>
+            <summary>Licenciés et cotisations</summary>
+            <div class="table-wrap">
+              <table class="input-table" id="membersTable">
+                <thead>
+                  <tr>
+                    <th>Catégorie</th>
+                    <th class="flow-neutral">Lic.</th>
+                    <th class="flow-revenue">Cotisation</th>
+                    <th class="flow-expense">Féd.</th>
+                    <th class="flow-expense">Ligue + comité</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </details>
+
+          <details open>
+            <summary>Volants</summary>
+            <div id="shuttleControls" class="control-grid"></div>
+          </details>
+
+          <details open>
+            <summary>Entraîneurs et stages</summary>
+            <div id="trainingControls" class="control-grid"></div>
+          </details>
+
+          <details>
+            <summary>Subventions et autres postes</summary>
+            <div id="otherControls" class="control-grid"></div>
+          </details>
+        </aside>
+
+        <section class="panel indicators-panel">
+          <div class="insight-grid">
+            <article>
+              <span>Licences reversées</span>
+              <div class="mini-balance">
+                <p class="mini-row mini-revenue"><span>Recettes cotisations</span><strong id="licenseRevenue">0 €</strong></p>
+                <p class="mini-row mini-expense"><span>Dépenses reversées</span><strong id="licenseCost">0 €</strong></p>
+                <p class="mini-row mini-net"><span>Net licences</span><strong id="licenseNet">0 €</strong></p>
+              </div>
+              <small id="licenseCostPerMember">0 € reversés / licencié</small>
+            </article>
+            <article>
+              <span>Coût net volants</span>
+              <div class="mini-balance">
+                <p class="mini-row mini-revenue"><span>Recettes ventes</span><strong id="shuttleRevenue">0 €</strong></p>
+                <p class="mini-row mini-expense"><span>Dépenses achats</span><strong id="shuttleExpense">0 €</strong></p>
+                <p class="mini-row mini-net"><span>Net volants</span><strong id="shuttleSubsidy">0 €</strong></p>
+              </div>
+              <small id="shuttleBoxes">0 boîtes simulées</small>
+            </article>
+            <article>
+              <span>Jeux libre</span>
+              <strong id="freePlayCost">0 €</strong>
+              <small id="freePlayWeeks">0 semaine active</small>
+            </article>
+            <article>
+              <span>Entraînements jeunes</span>
+              <strong id="youthTrainingCost">0 €</strong>
+              <small id="youthTrainingBoxes">0 boîte</small>
+            </article>
+            <article>
+              <span>Cordages compétiteurs</span>
+              <strong id="stringingCost">0 €</strong>
+              <small id="stringingCount">0 cordage</small>
+            </article>
+            <article>
+              <span>Manifestations</span>
+              <strong id="organizedTournamentNet">0 €</strong>
+              <small>résultat net organisé</small>
+            </article>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel tournament-panel">
+        <div class="panel-heading split">
+          <div>
+            <h2>Manifestations organisées</h2>
+            <p>Postes repris du bilan Numbers et ajustables ligne par ligne.</p>
+          </div>
+          <button id="addTournamentButton" class="text-button" type="button">Ajouter</button>
+        </div>
+        <div class="table-wrap">
+          <table class="input-table event-table" id="eventsTable">
+            <thead>
+              <tr>
+                <th>Manifestation</th>
+                <th>Détail</th>
+                <th class="flow-neutral">Joueurs</th>
+                <th class="flow-revenue">Hausse</th>
+                <th class="flow-expense">Dépenses</th>
+                <th class="flow-revenue">Recettes base</th>
+                <th class="flow-revenue">Recettes simulées</th>
+                <th>Net</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel sources-panel">
+        <div class="panel-heading">
+          <h2>Sources et hypothèses</h2>
+          <p>Les chiffres sont modifiables; les valeurs ci-dessous servent de point de départ.</p>
+        </div>
+        <ul>
+          <li>BCV38, saison 2025-2026: jeunes 105 €, 115 €, 140 €; adulte loisir 105 €; adulte compétition 150 €; joueur externe 60 €; volants adultes à 20 € sur les 5 premiers tubes puis 28 € ou 35 € selon profil; adulte compétition avec 4 cordages inclus.</li>
+          <li>Part fédérale licence annuelle FFBaD 2025-2026: minibad 13,73 €, jeune 25,97 €, adulte 31,57 €. Les parts ligue/comité sont éditables, avec un point de départ AURA.</li>
+          <li>Jeux libre: saison par défaut du 1er septembre 2025 au 30 juin 2026, académie de Grenoble en zone A; les semaines de vacances scolaires sont exclues du calcul.</li>
+          <li>TRV 2025 Voreppe: 18 € pour un tableau, 21 € pour deux tableaux, tournoi des 3 et 4 mai 2025. Les nombres de joueurs de départ sont estimés depuis les recettes d'inscription du bilan.</li>
+          <li>Bilan Numbers 2024-2025: 38 288,30 € de recettes, 39 822,40 € de dépenses, résultat -1 534,10 €; catégories et manifestations reprises du fichier local.</li>
+        </ul>
+        <div class="source-links">
+          <a href="https://bcv38.org/page/inscrire/" target="_blank" rel="noreferrer">Tarifs BCV38</a>
+          <a href="https://comitebadminton69.fr/tarifs-des-licences-et-affiliations/" target="_blank" rel="noreferrer">Parts licence 2025-2026</a>
+          <a href="https://www.service-public.gouv.fr/particuliers/actualites/A18008" target="_blank" rel="noreferrer">Vacances zone A</a>
+          <a href="https://www.bvse.org/tournoi/trv2025" target="_blank" rel="noreferrer">TRV 2025</a>
+          <a href="https://badnet.fr/tournoi/public?eventid=28973" target="_blank" rel="noreferrer">Fiche BadNet</a>
+        </div>
+      </section>
+
+      <section class="panel category-panel">
+        <div class="panel-heading">
+          <h2>Bilan par catégorie</h2>
+          <p>Coût club estimé par licencié, avec les avantages spécifiques aux adultes compétition, aux joueurs externes et aux entraînements jeunes.</p>
+        </div>
+        <div class="table-wrap">
+          <table class="input-table category-table" id="categoryTable">
+            <thead>
+              <tr>
+                <th>Catégorie</th>
+                <th class="flow-neutral">Lic.</th>
+                <th class="flow-revenue">Cotisation</th>
+                <th class="flow-expense">Licence reversée</th>
+                <th class="flow-expense">Volants catégorie</th>
+                <th class="flow-expense">Jeux libre / joueur</th>
+                <th class="flow-expense">Cordages</th>
+                <th class="flow-revenue">Net / joueur</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
