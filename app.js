@@ -212,13 +212,13 @@
       ["subsidizedBoxesPerAdult", "Quota à 20 € / adulte compétition", "boîtes", "number", "mixed"],
       ["costPerBox", "Prix achat boîte", "€", "number", "expense"],
       ["subsidizedSalePrice", "Prix vente subventionné", "€", "number", "revenue"],
-      ["regularSalePrice", "Prix vente après quota", "€", "number", "revenue"],
       ["freePlaySeasonStart", "Début saison jeux libre", "zone A Grenoble", "date", "neutral"],
       ["freePlaySeasonEnd", "Fin saison jeux libre", "hors été", "date", "neutral"],
       ["freePlayBoxesPerWeek", "Boîtes / semaine jeux libre", "boîtes", "number", "expense"],
       ["freePlayBoxPrice", "Prix boîte jeux libre", "€", "number", "expense"],
       ["youthTrainingBoxesPerWeek", "Boîtes / semaine entraînements jeunes", "boîtes", "number", "expense"],
       ["youthTrainingBoxPrice", "Prix boîte entraînements jeunes", "€", "number", "expense"],
+      ["regularSalePrice", "Prix vente après quota", "€", "number", "revenue"],
     ],
     training: [
       ["coachMonthlyCost", "Entraîneurs / mois", "€", "number", "expense"],
@@ -377,13 +377,27 @@
     return `<td class="flow-cell flow-${flow}"><input type="number" min="0" step="${step}" value="${value}" data-section="members" data-index="${index}" data-field="${field}">${referenceNote("members", field, index)}</td>`;
   }
 
+  function getControlLabel(section, field, label) {
+    if (section === "shuttle" && field === "subsidizedBoxesPerAdult") {
+      return `Quota à ${money(state.shuttle.subsidizedSalePrice)} / adulte compétition`;
+    }
+    return label;
+  }
+
+  function updateDynamicControlLabels() {
+    document.querySelectorAll("[data-role='control-label']").forEach((labelElement) => {
+      const { section, field, label } = labelElement.dataset;
+      labelElement.textContent = getControlLabel(section, field, label);
+    });
+  }
+
   function renderControls(section, container) {
     container.innerHTML = "";
     controlConfig[section].forEach(([field, label, suffix, type = "number", flow = "neutral"]) => {
       const wrapper = document.createElement("label");
       wrapper.className = `control flow-card flow-${flow}`;
       wrapper.innerHTML = `
-        <span>${label}</span>
+        <span data-role="control-label" data-section="${section}" data-field="${field}" data-label="${escapeAttribute(label)}">${getControlLabel(section, field, label)}</span>
         <input type="${type}" ${type === "number" ? 'step="0.01"' : ""} value="${state[section][field]}" data-section="${section}" data-field="${field}">
         ${referenceNote(section, field)}
         <small>${suffix}</small>
@@ -662,6 +676,9 @@
       }
     } else {
       state[section][field] = input.type === "date" ? input.value : asNumber(input.value);
+      if (section === "shuttle" && field === "subsidizedSalePrice") {
+        updateDynamicControlLabels();
+      }
     }
 
     saveState();

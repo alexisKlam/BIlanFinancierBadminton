@@ -310,11 +310,18 @@ summary {
 
 .control {
   display: grid;
+  grid-template-rows: minmax(2.45rem, auto) 40px minmax(1.75rem, auto) auto;
+  align-content: start;
   border: 1px solid var(--line);
   border-radius: 8px;
   gap: 6px;
   padding: 10px;
   background: #fff;
+}
+
+.control > span {
+  min-height: 2.45rem;
+  line-height: 1.2;
 }
 
 .control small {
